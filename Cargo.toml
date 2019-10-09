@@ -1,0 +1,16 @@
+[package]
+name = "sunset"
+version = "0.1.0"
+authors = ["Jon Valdés"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web="1.0.8" 				# Web server
+failure = "0.1.5" 				# Error handling
+parking_lot = "^0.9" 			# Good mutexes
+serde = "^1.0" 					# Deserialization of JSON data
+log = "0.4.0"					# Logging
+fern = "0.5.8"					# Logging
+dirs = "2.0.2"					# Getting the home dir
