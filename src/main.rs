@@ -1,9 +1,9 @@
 extern crate actix_web;
+extern crate dirs;
 extern crate failure;
 extern crate fern;
 extern crate log;
 extern crate parking_lot;
-extern crate dirs;
 
 use actix_web::{web, App, HttpServer};
 use failure::Error;
@@ -109,6 +109,10 @@ fn set_handler(req: web::Query<Request>, data: web::Data<AppState>) -> Result<()
     Ok(())
 }
 
+fn get_handler(data: web::Data<AppState>) -> Result<String, Error> {
+    Ok(format!("{}", data.data.lock().brightness.value))
+}
+
 fn brighter_handler(data: web::Data<AppState>) -> Result<(), Error> {
     data.data.lock().brightness.change(5.0);
     data.data.lock().restart();
@@ -126,8 +130,11 @@ struct AppState {
 }
 
 fn main() {
-
-    let home = dirs::home_dir().unwrap().into_os_string().into_string().unwrap();
+    let home = dirs::home_dir()
+        .unwrap()
+        .into_os_string()
+        .into_string()
+        .unwrap();
 
     // Configure logger at runtime
     fern::Dispatch::new()
@@ -142,7 +149,7 @@ fn main() {
         })
         .level(log::LevelFilter::Debug)
         .chain(std::io::stdout())
-        .chain(fern::log_file(format!("{}/sunset.log",home)).expect("could not set up log file"))
+        .chain(fern::log_file(format!("{}/sunset.log", home)).expect("could not set up log file"))
         .apply()
         .expect("Could not initialize logging");
 
@@ -161,6 +168,7 @@ fn main() {
     HttpServer::new(move || {
         App::new()
             .register_data(app_state.clone())
+            .route("/get", web::get().to(get_handler))
             .route("/set", web::get().to(set_handler))
             .route("/brighter", web::get().to(brighter_handler))
             .route("/darker", web::get().to(darker_handler))
