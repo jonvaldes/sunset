@@ -53,6 +53,9 @@ impl AppData {
         if let Err(err) = self.redshift_process.kill() {
             eprintln!("Could not kill redshift process: {}", err);
         }
+        if let Err(err) = self.redshift_process.wait() {
+            eprintln!("Could not wait on killed redshift process: {}", err);
+        }
     }
 
     fn restart(&mut self) {
